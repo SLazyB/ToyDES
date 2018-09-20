@@ -39,19 +39,27 @@ public:
         string tmp3 = "";
         string fk1 = "";
         string fk2 = "";
-        for(int a = 0; a < conv.size(); a++){
+        for(int a = 0; a < conv.size(); a++){   //Loops through vector and stores all encrypted text to end_crypt
             tmp = conv[a];
+            
+            //Splitting the original 8-bit set
             tmp1_l = tmp.substr(0,4);
             tmp1_r = tmp.substr(4,4);
             tmp2_l = tmp1_r;
+            
+            //First round
             fk1 = F(tmp1_r, key1);
             tmp2_r = (bitset<4>(tmp1_l) ^ bitset<4>(fk1)).to_string();
+            
+            //Second round
             fk2 = F(tmp2_r, key2);
             tmp3 = (bitset<4>(tmp2_l) ^ bitset<4>(fk2)).to_string();
+            
             tmp3.append(tmp2_r);
             end_crypt.push_back(invPermutation(tmp3));
             
         }
+        //Creates new encrypted string
         string output = "";
         for(int m = 0; m < end_crypt.size(); m++){
             output.push_back(char(bitset<8>(end_crypt[m]).to_ulong()));
@@ -80,19 +88,29 @@ public:
         string fk1 = "";
         string fk2 = "";
         
-        for(int a = 0; a < conv.size(); a++){
+        for(int a = 0; a < conv.size(); a++){   //Loops through vector and stores all encrypted text to end_crypt
             tmp = conv[a];
+            
+            //Splitting the original 8-bit set
             tmp1_l = tmp.substr(0,4);
             tmp1_r = tmp.substr(4,4);
             tmp2_l = tmp1_r;
+            
+            //First Round
             fk1 = F(tmp1_r, key2);
             tmp2_r = (bitset<4>(tmp1_l) ^ bitset<4>(fk1)).to_string();
+            
+            //Second round
             fk2 = F(tmp2_r, key1);
             tmp3 = (bitset<4>(tmp2_l) ^ bitset<4>(fk2)).to_string();
+            
+            
             tmp3.append(tmp2_r);
             end_crypt.push_back(invPermutation(tmp3));
             
         }
+        
+        //Creating new decrypted string
         string output = "";
         for(int m = 0; m < end_crypt.size(); m++){
             output.push_back(char(bitset<8>(end_crypt[m]).to_ulong()));
@@ -100,6 +118,7 @@ public:
         
         return output;
     }
+    
 private:
     string Permutation(bitset<8> input){    //Initial permutation
         string tmp = input.to_string();
@@ -114,7 +133,6 @@ private:
         out.push_back(tmp[6]);
         return out;
     }
-    
     string invPermutation(string input){    //Ending permutation
         string tmp = input;
         string out;
@@ -128,7 +146,6 @@ private:
         out.push_back(tmp[5]);
         return out;
     }
-    
     string P10(string key){     //10-bit Permutation
         string tmp = key;
         string out;
@@ -145,7 +162,6 @@ private:
         return out;
         
     }
-    
     string P8(string kp){   //8-bit Permutation
         string tmp = kp;
         string out;
@@ -160,7 +176,6 @@ private:
         return out;
         
     }
-    
     string P4(string kp){   //4-bit Permutation
         string out;
         out.push_back(kp[1]);
@@ -169,13 +184,11 @@ private:
         out.push_back(kp[0]);
         return out;
     }
-    
     string lshift(string kp){   //Left rolling by 1-bit
         string kp_s = kp.substr(1,4);
         kp_s.push_back(kp[0]);
         return kp_s;
     }
-    
     string Expansion(string input){     //4-bit to 8-bit expansion
         string out;
         out.push_back(input[3]);
@@ -188,7 +201,6 @@ private:
         out.push_back(input[0]);
         return out;
     }
-    
     void sub_gen(string key){   //Creates the two parts of the key
         string kp = P10(key);
         string k1_l = lshift(kp.substr(0,5));
@@ -199,8 +211,10 @@ private:
         string k2_r = lshift(k1_r);
         key2 = P8((k2_l + k2_r));
     }
-    
     string F(string input, string kp){  //F function
+        string s0[4][4] = { {"01","00","11","10"}, {"11","10","01","00"}, {"00","10","01","11"}, {"11","01","11","10"}};
+        string s1[4][4] = { {"00","01","10","11"}, {"10","00","01","11"}, {"11","00","01","00"}, {"10","01","00","11"}};
+
         string i_e = Expansion(input);
         string x_o = (bitset<8>(i_e) ^ bitset<8>(kp)).to_string();
         string x_ol = x_o.substr(0,4);
@@ -224,12 +238,10 @@ private:
         return out;
     }
     
+    //Stores key for current encryption/decryption process
     string key;
     string key1;
     string key2;
-    
-    string s0[4][4] = { {"01","00","11","10"}, {"11","10","01","00"}, {"00","10","01","11"}, {"11","01","11","10"}};
-    string s1[4][4] = { {"00","01","10","11"}, {"10","00","01","11"}, {"11","00","01","00"}, {"10","01","00","11"}};
 };
 
 int main(int argc, char* argv[]){
@@ -300,8 +312,8 @@ int main(int argc, char* argv[]){
                 else if(inp == "3"){
                     done2 = true;
                 }
-
             }
+            delete des;
         }
         else if(inp == "2"){
             done = true;
