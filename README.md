@@ -1,2 +1,2 @@
 # ToyDES
-Toy-DES for Cryptography and Network Security I
+Toy-DES for Cryptography and Network Security I - HW1
